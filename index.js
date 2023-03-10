@@ -1,12 +1,41 @@
 const express = require('express')
 const app = express();
+const cors = require('cors')
+const users = require('./user.json');
+const postRouter = require('./controller/posts');
+const userRouter = require('./controller/users');
+const jwt = require('jsonwebtoken')
+const mongoose = require('mongoose');
 
-app.get('/', (req, res)=>{
-  res.send('Hello World!');
+const { getAllBlogs } = require('./dao/blogs')
+
+mongoose.connect('mongodb://127.0.0.1:27017/aniblog').then((mongoose) => {
+  console.log('MongoDb Connected');
+  
+}).catch(err => {console.error(err)})
+
+app.use(cors());
+app.use(express.json())
+
+app.post('/login', (req, res)=>{
+  var user = users.find(u => u.username == req.body.username && u.password == req.body.password)
+  if(user) {
+    var token = jwt.sign({username: user.username, role: user.role}, 'secret');
+    res.send(token)
+  } else {
+    res.status(401).send('Auth failed');
+  }
 })
 
-app.listen(3000, ()=>{
+
+app.use('/posts', postRouter)
+app.use('/users', userRouter)
+
+app.listen(3000, () => {
   console.log('Server started in port: 3000');
 })
+
+
+
 
 
