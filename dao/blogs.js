@@ -1,13 +1,16 @@
 const Blog = require('../models/blog')
 
 exports.getAllBlogs = async function () {
-  let blogs = await Blog.find({});
-  console.log(blogs);
-  return blogs;
+  try { 
+    let blogs = await Blog.find({});
+    return blogs;
+  } catch(err) {
+    console.log(err)
+  }
+
 }
 
 exports.getBlogById = function (id) {
-  console.log(id)
   return Blog.findOne({ _id: id });
 }
 
