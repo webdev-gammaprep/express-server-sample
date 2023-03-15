@@ -7,7 +7,10 @@ const userRouter = require('./controller/users');
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose');
 const logger = require('./config/log');
-mongoose.connect('mongodb://127.0.0.1:27017/aniblog').then((mongoose) => {
+const dotenv = require('dotenv')
+
+dotenv.config()
+mongoose.connect(process.env.MONGO_CONNNECTION_STRING).then((mongoose) => {
   console.log('MongoDb Connected');
 }).catch(err => {console.error(err)})
 
@@ -18,7 +21,7 @@ app.post('/login', (req, res)=>{
   var user = users.find(u => u.username == req.body.username && u.password == req.body.password)
   if(user) {
     logger.info(`User found for username: ${req.body.username}`);
-    var token = jwt.sign({username: user.username, role: user.role}, 'secret');
+    var token = jwt.sign({username: user.username, role: user.role}, process.env.JWT_SIGN_SECRET);
     res.send(token)
   } else {
     logger.error(`username: ${req.body.username} was not found!`)
