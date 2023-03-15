@@ -7,7 +7,8 @@ const userRouter = require('./controller/users');
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose');
 const logger = require('./config/log');
-const dotenv = require('dotenv')
+const dotenv = require('dotenv');
+const authentication = require('./auth/authentication')
 
 dotenv.config()
 mongoose.connect(process.env.MONGO_CONNNECTION_STRING).then((mongoose) => {
@@ -30,7 +31,7 @@ app.post('/login', (req, res)=>{
 })
 
 
-app.use('/posts', postRouter)
+app.use('/posts', authentication, postRouter)
 app.use('/users', userRouter)
 
 app.listen(3000, () => {
